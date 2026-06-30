@@ -1,39 +1,27 @@
 "use client";
 
 import { HowzitLogo } from "@/components/shared/HowzitLogo";
-import { Link2 } from "lucide-react";
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[#E5E5E5] bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer className="border-t border-[var(--border)] bg-white">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
         <HowzitLogo size="sm" />
 
-        <p className="text-sm text-[#A0A0A0]">
-          Built with 🧡 in South Africa · © {year} Howzit
+        <p className="text-sm text-[var(--grey-500)]">
+          Built in South Africa 🇿🇦 · © {year} Howzit
         </p>
 
-        <div className="flex items-center gap-5">
-          <a
-            href="#"
-            className="text-xs text-[#A0A0A0] hover:text-[#0A0A0A] transition-colors"
-          >
+        <div className="flex items-center gap-5 text-xs text-[var(--grey-500)]">
+          <a href="#" className="transition-colors hover:text-[var(--charcoal)]">
             Privacy
           </a>
-          <a
-            href="#"
-            className="text-xs text-[#A0A0A0] hover:text-[#0A0A0A] transition-colors"
-          >
+          <a href="#" className="transition-colors hover:text-[var(--charcoal)]">
             Terms
           </a>
-          <a
-            href="mailto:hello@howzit.app"
-            className="flex items-center gap-1 text-xs text-[#A0A0A0] hover:text-[#FF5500] transition-colors"
-            aria-label="Contact Howzit"
-          >
-            <Link2 size={13} />
+          <a href="mailto:hello@joinhowzit.com" className="transition-colors hover:text-[var(--orange)]">
             Contact
           </a>
         </div>

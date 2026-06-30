@@ -1,71 +1,42 @@
+export type LookingFor =
+  | "jobs"
+  | "friends"
+  | "mentors"
+  | "co-founder"
+  | "networking"
+  | "internships"
+  | "business-opportunities"
+  | "other";
+
+export type WaitlistStatus = "pending" | "approved" | "invited";
+
 export interface WaitlistEntry {
   id?: string;
   created_at?: string;
   email: string;
   first_name: string;
-  city: string;
-  age_group: AgeGroup;
-  interests: Interest[];
+  surname: string;
+  age: number;
+  looking_for: LookingFor;
   status?: WaitlistStatus;
   source?: string;
 }
 
-export type AgeGroup = "18-21" | "22-25" | "26-29" | "30-35";
+export type WaitlistFormData = Omit<WaitlistEntry, "id" | "created_at" | "status" | "source">;
 
-export type Interest =
-  | "jobs"
-  | "internships"
-  | "mentorship"
-  | "co-founders"
-  | "investors"
-  | "communities"
-  | "networking"
-  | "collaborators";
-
-export type WaitlistStatus = "pending" | "approved" | "invited";
-
-export interface WaitlistFormData {
-  first_name: string;
-  email: string;
-  city: string;
-  age_group: AgeGroup;
-  interests: Interest[];
-}
-
-export interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  location: string;
-  avatar: string;
-  quote: string;
-}
-
-export interface Feature {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-}
+export type SwipeCardType = "person" | "job" | "mentor" | "co-founder" | "event";
 
 export interface SwipeCard {
   id: string;
-  type: "person" | "opportunity" | "community";
+  type: SwipeCardType;
   name: string;
   role: string;
   location: string;
   tags: string[];
-  color: string;
 }
 
-export interface FaqItem {
-  question: string;
-  answer: string;
-}
-
-export interface Stat {
-  value: string;
+export interface ProblemStat {
+  value: number;
+  suffix: string;
   label: string;
-  prefix?: string;
-  suffix?: string;
 }

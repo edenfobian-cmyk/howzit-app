@@ -1,51 +1,45 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useRef, useState } from "react";
+import { ArcRevealHero } from "@/components/shared/ArcRevealHero";
 import { Navbar } from "@/components/sections/Navbar";
 import { Hero } from "@/components/sections/Hero";
-import { LearnMore } from "@/components/sections/LearnMore";
+import { Problem } from "@/components/sections/Problem";
+import { Solution } from "@/components/sections/Solution";
+import { FinalCTA } from "@/components/sections/FinalCTA";
 import { WaitlistModal } from "@/components/sections/WaitlistModal";
 import { Footer } from "@/components/sections/Footer";
 
+const INTRO_GREETINGS = [
+  { text: "Sawubona." },
+  { text: "Heita." },
+  { text: "Aweh." },
+];
+
 export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [learnMoreVisible, setLearnMoreVisible] = useState(false);
-  const learnMoreRef = useRef<HTMLElement>(null);
+  const problemRef = useRef<HTMLElement>(null);
 
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
 
   const handleLearnMore = useCallback(() => {
-    setLearnMoreVisible(true);
-    setTimeout(() => {
-      learnMoreRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
+    problemRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   return (
-    <>
+    <ArcRevealHero greetings={INTRO_GREETINGS} storageKey="howzit-intro">
       <Navbar onJoinClick={openModal} />
 
       <main>
         <Hero onJoinClick={openModal} onLearnMoreClick={handleLearnMore} />
-
-        <AnimatePresence>
-          {learnMoreVisible && (
-            <motion.div
-              key="learn-more"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <LearnMore ref={learnMoreRef} onJoinClick={openModal} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Problem ref={problemRef} />
+        <Solution />
+        <FinalCTA onJoinClick={openModal} />
       </main>
 
       <Footer />
       <WaitlistModal isOpen={modalOpen} onClose={closeModal} />
-    </>
+    </ArcRevealHero>
   );
 }

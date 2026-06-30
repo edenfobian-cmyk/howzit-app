@@ -16,8 +16,8 @@ const sizes = {
 export function HowzitLogo({ className, size = "md" }: HowzitLogoProps) {
   return (
     <span className={cn("font-black tracking-tight select-none", sizes[size], className)}>
-      <span style={{ color: "#FF5500" }}>Howz</span>
-      <span style={{ color: "#0A0A0A" }}>it</span>
+      <span style={{ color: "var(--orange)" }}>Howz</span>
+      <span style={{ color: "var(--charcoal)" }}>it</span>
     </span>
   );
 }

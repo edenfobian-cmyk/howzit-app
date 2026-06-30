@@ -23,57 +23,47 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --primary: #ff5500;
+  --foreground: #1a1815;
+  --primary: #ff6a00;
   --primary-foreground: #ffffff;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --border: #e5e5e5;
+  --muted: #f4f2ef;
+  --muted-foreground: #8a8680;
+  --border: #e8e5e0;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --radius: 0.75rem;
+  --card-foreground: #1a1815;
+  --radius: 0.875rem;
 
-  /* Howzit Brand */
-  --orange: #ff5500;
-  --orange-light: #ff7733;
-  --orange-dim: rgba(255, 85, 0, 0.08);
-  --orange-glow: rgba(255, 85, 0, 0.25);
-  --black: #0a0a0a;
-  --grey-50: #fafafa;
-  --grey-100: #f5f5f5;
-  --grey-200: #e5e5e5;
-  --grey-300: #d4d4d4;
-  --grey-500: #737373;
-  --grey-900: #171717;
+  /* Howzit brand */
+  --orange: #ff6a00;
+  --orange-dim: rgba(255, 106, 0, 0.07);
+  --orange-ring: rgba(255, 106, 0, 0.16);
+  --charcoal: #1a1815;
+  --off-white: #fbf9f6;
+  --grey-100: #f4f2ef;
+  --grey-200: #e8e5e0;
+  --grey-300: #d6d2cb;
+  --grey-500: #8a8680;
 }
 
-.dark {
-  --background: #09090b;
-  --foreground: #fafafa;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --border: #27272a;
-  --card: #18181b;
-  --card-foreground: #fafafa;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  overflow-x: hidden;
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    overflow-x: hidden;
+  }
 }
 
 /* Scrollbar */
@@ -94,68 +84,30 @@ body {
   color: var(--orange);
 }
 
-/* Custom utilities */
 .gradient-text {
-  background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
+  background: linear-gradient(135deg, #ff6a00 0%, #ff9433 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.glass-dark {
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.orange-glow {
-  box-shadow: 0 0 40px var(--orange-glow), 0 0 80px rgba(255, 85, 0, 0.1);
-}
-
 .card-shadow {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 2px rgba(26, 24, 21, 0.04), 0 6px 20px rgba(26, 24, 21, 0.05);
 }
 
 .card-shadow-hover {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 0 8px 48px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(26, 24, 21, 0.06), 0 12px 32px rgba(26, 24, 21, 0.08);
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px var(--orange-glow); }
-  50% { box-shadow: 0 0 40px var(--orange-glow), 0 0 80px rgba(255, 85, 0, 0.1); }
-}
-
-@keyframes swipe-right {
-  0% { transform: rotate(0deg) translateX(0); opacity: 1; }
-  100% { transform: rotate(8deg) translateX(120px); opacity: 0; }
-}
-
-@keyframes swipe-left {
-  0% { transform: rotate(0deg) translateX(0); opacity: 1; }
-  100% { transform: rotate(-8deg) translateX(-120px); opacity: 0; }
+  50% { transform: translateY(-10px); }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 7s ease-in-out infinite;
 }
 
 .animate-float-delayed {
-  animation: float 6s ease-in-out infinite 2s;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
+  animation: float 7s ease-in-out infinite 2.3s;
 }
