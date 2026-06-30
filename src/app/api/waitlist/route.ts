@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("waitlist insert failed:", err);
     return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
