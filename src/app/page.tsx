@@ -21,6 +21,7 @@ const INTRO_GREETINGS = [
 
 function PageContent() {
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [countKey, setCountKey] = useState(0);
   const demoRef = useRef<HTMLElement>(null);
   const searchParams = useSearchParams();
   const referredBy = searchParams.get("ref") ?? undefined;
@@ -37,7 +38,7 @@ function PageContent() {
       <Navbar onJoinClick={openSheet} />
 
       <main>
-        <Hero onJoinClick={openSheet} onLearnMoreClick={scrollToDemo} />
+        <Hero onJoinClick={openSheet} onLearnMoreClick={scrollToDemo} countKey={countKey} />
         <InteractiveAppDemo ref={demoRef} onJoinClick={openSheet} />
         <ProblemSection />
         <FirstWeekTimeline />
@@ -45,7 +46,12 @@ function PageContent() {
       </main>
 
       <Footer />
-      <WaitlistSheet isOpen={sheetOpen} onClose={closeSheet} referredBy={referredBy} />
+      <WaitlistSheet
+        isOpen={sheetOpen}
+        onClose={closeSheet}
+        referredBy={referredBy}
+        onSuccess={() => setCountKey((k) => k + 1)}
+      />
     </ArcRevealHero>
   );
 }

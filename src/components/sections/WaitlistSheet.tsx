@@ -14,6 +14,7 @@ interface WaitlistSheetProps {
   isOpen: boolean;
   onClose: () => void;
   referredBy?: string;
+  onSuccess?: () => void;
 }
 
 type Status = "idle" | "loading" | "success" | "duplicate" | "error";
@@ -77,7 +78,7 @@ function Step1({
           </label>
           <Input
             {...register("first_name")}
-            placeholder="Thando"
+            placeholder="Jordan"
             error={!!errors.first_name}
           />
           {errors.first_name && (
@@ -90,7 +91,7 @@ function Step1({
           </label>
           <Input
             {...register("surname")}
-            placeholder="Mkhize"
+            placeholder="Williams"
             error={!!errors.surname}
           />
           {errors.surname && (
@@ -315,7 +316,7 @@ function SuccessState({
 }
 
 // ── Main Sheet ────────────────────────────────────────────────────
-export function WaitlistSheet({ isOpen, onClose, referredBy }: WaitlistSheetProps) {
+export function WaitlistSheet({ isOpen, onClose, referredBy, onSuccess }: WaitlistSheetProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1Values | null>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -347,6 +348,7 @@ export function WaitlistSheet({ isOpen, onClose, referredBy }: WaitlistSheetProp
         setReferralCode(json.referral_code ?? null);
         setStatus("success");
         fireConfetti();
+        onSuccess?.();
       } else if (json.error === "already_registered") {
         setReferralCode(json.referral_code ?? null);
         setStatus("duplicate");

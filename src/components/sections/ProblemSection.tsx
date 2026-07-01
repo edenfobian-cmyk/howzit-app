@@ -162,14 +162,6 @@ export function ProblemSection() {
             delay={400}
             subLabel="Ages 35–64"
           />
-          <Bar
-            label="Youth unemployment in connected households"
-            value={21}
-            maxValue={100}
-            color="rgba(74,124,89,0.9)"
-            delay={600}
-            subLabel="With professional networks"
-          />
         </motion.div>
 
         <motion.p

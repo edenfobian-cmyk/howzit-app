@@ -10,6 +10,7 @@ import { staggerContainer, staggerItem } from "@/animations/variants";
 interface HeroProps {
   onJoinClick: () => void;
   onLearnMoreClick: () => void;
+  countKey?: number;
 }
 
 const AVATARS = [
@@ -20,7 +21,7 @@ const AVATARS = [
   { initials: "LN", bg: "#7C4A6A" },
 ];
 
-function SocialProof() {
+function SocialProof({ countKey = 0 }: { countKey?: number }) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ function SocialProof() {
       .then((r) => r.json())
       .then((d) => setCount(d.count))
       .catch(() => setCount(327));
-  }, []);
+  }, [countKey]); // re-fetches whenever a new person joins
 
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -60,7 +61,7 @@ function SocialProof() {
   );
 }
 
-export function Hero({ onJoinClick, onLearnMoreClick }: HeroProps) {
+export function Hero({ onJoinClick, onLearnMoreClick, countKey }: HeroProps) {
   return (
     <section className="relative flex min-h-screen flex-col justify-end overflow-hidden px-6 pb-16 pt-32 sm:px-12 md:px-20">
       <motion.div
@@ -121,7 +122,7 @@ export function Hero({ onJoinClick, onLearnMoreClick }: HeroProps) {
 
         {/* Social proof */}
         <motion.div variants={staggerItem} className="mt-9">
-          <SocialProof />
+          <SocialProof countKey={countKey} />
         </motion.div>
 
         {/* Instagram link */}
