@@ -13,9 +13,10 @@ import { EndingSection } from "@/components/sections/EndingSection";
 import { Footer } from "@/components/sections/Footer";
 
 const INTRO_GREETINGS = [
-  { text: "Sawubona." },
-  { text: "Heita." },
-  { text: "Aweh." },
+  { text: "People." },
+  { text: "Opportunity." },
+  { text: "Connection." },
+  { text: "Howzit." },
 ];
 
 function PageContent() {
