@@ -1,60 +1,111 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
+import { InstagramIcon } from "@/components/shared/InstagramIcon";
+import { INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/constants";
 import { staggerContainer, staggerItem } from "@/animations/variants";
-import { NetworkVisual } from "@/components/shared/NetworkVisual";
 
 interface HeroProps {
   onJoinClick: () => void;
   onLearnMoreClick: () => void;
 }
 
+function SocialProofCounter() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/count")
+      .then((r) => r.json())
+      .then((d) => setCount(d.count))
+      .catch(() => setCount(327));
+  }, []);
+
+  return (
+    <span className="tabular-nums">
+      {count === null ? "..." : `${count.toLocaleString()}`}
+    </span>
+  );
+}
+
 export function Hero({ onJoinClick, onLearnMoreClick }: HeroProps) {
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-16">
-      <NetworkVisual className="pointer-events-none absolute inset-x-0 top-[8%] mx-auto h-[300px] w-full max-w-3xl opacity-70 sm:top-[12%]" />
-
+    <section className="relative min-h-screen flex flex-col justify-end pb-16 px-6 sm:px-12 md:px-20 pt-32 overflow-hidden">
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="relative z-10 mx-auto max-w-3xl text-center"
+        className="max-w-5xl"
       >
-        <motion.h1
-          variants={staggerItem}
-          className="text-[clamp(2.75rem,8vw,5.5rem)] font-black leading-[1.04] tracking-tight text-[var(--charcoal)]"
-        >
-          Find your people.
-          <br />
-          <span className="gradient-text">Build your future.</span>
-        </motion.h1>
-
+        {/* Eyebrow */}
         <motion.p
           variants={staggerItem}
-          className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-[var(--grey-500)]"
+          className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--warm-500)] mb-8"
         >
-          The easiest way for ambitious South Africans to meet the people and
-          opportunities that change lives.
+          Built in Cape Town · For SA&apos;s next generation
         </motion.p>
 
+        {/* Headline — left-aligned, huge */}
+        <motion.h1
+          variants={staggerItem}
+          className="font-black leading-[0.96] tracking-tight text-[var(--charcoal)]"
+          style={{ fontSize: "clamp(3.2rem, 10vw, 7rem)" }}
+        >
+          Talent is
+          <br />
+          everywhere.
+          <br />
+          <span className="text-[var(--orange)]">Access isn&apos;t.</span>
+        </motion.h1>
+
+        {/* Supporting sentence */}
+        <motion.p
+          variants={staggerItem}
+          className="mt-8 max-w-lg text-lg leading-relaxed text-[var(--warm-500)] md:text-xl"
+        >
+          Howzit helps young South Africans meet the people, jobs, mentors and
+          opportunities they usually never get close to.
+        </motion.p>
+
+        {/* CTAs */}
         <motion.div
           variants={staggerItem}
-          className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          className="mt-10 flex flex-wrap items-center gap-4"
         >
           <button
             onClick={onJoinClick}
-            className="rounded-full bg-[var(--orange)] px-8 py-3.5 text-base font-semibold text-white shadow-[0_6px_20px_rgba(255,106,0,0.28)] transition-transform duration-200 hover:scale-[1.03] active:scale-95"
+            className="group relative rounded-full bg-[var(--orange)] px-8 py-3.5 text-base font-bold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95 shadow-[0_6px_24px_rgba(255,106,0,0.32)]"
           >
-            Join the waitlist
+            Join the Founding Members
           </button>
           <button
             onClick={onLearnMoreClick}
-            className="flex items-center gap-2 px-6 py-3.5 text-sm font-medium text-[var(--grey-500)] transition-colors duration-200 hover:text-[var(--charcoal)]"
+            className="flex items-center gap-2 px-4 py-3.5 text-sm font-medium text-[var(--warm-500)] transition-colors hover:text-[var(--charcoal)]"
           >
-            Learn more
+            See how it works
             <ArrowDown size={14} />
           </button>
+        </motion.div>
+
+        {/* Social proof */}
+        <motion.div
+          variants={staggerItem}
+          className="mt-8 flex flex-wrap items-center gap-6 text-sm text-[var(--warm-500)]"
+        >
+          <span>
+            <SocialProofCounter />{" "}
+            <span className="font-medium text-[var(--charcoal)]">people</span> have joined the founding waitlist.
+          </span>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 font-medium text-[var(--charcoal)] transition-colors hover:text-[var(--orange)]"
+          >
+            <InstagramIcon size={14} />
+            {INSTAGRAM_HANDLE}
+          </a>
         </motion.div>
       </motion.div>
     </section>

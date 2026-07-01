@@ -1,13 +1,15 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { Suspense, useCallback, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArcRevealHero } from "@/components/shared/ArcRevealHero";
 import { Navbar } from "@/components/sections/Navbar";
 import { Hero } from "@/components/sections/Hero";
-import { Problem } from "@/components/sections/Problem";
-import { Solution } from "@/components/sections/Solution";
-import { FinalCTA } from "@/components/sections/FinalCTA";
-import { WaitlistModal } from "@/components/sections/WaitlistModal";
+import { InteractiveAppDemo } from "@/components/sections/InteractiveAppDemo";
+import { NetworkStory } from "@/components/sections/NetworkStory";
+import { FirstWeekTimeline } from "@/components/sections/FirstWeekTimeline";
+import { WaitlistSheet } from "@/components/sections/WaitlistSheet";
+import { EndingSection } from "@/components/sections/EndingSection";
 import { Footer } from "@/components/sections/Footer";
 
 const INTRO_GREETINGS = [
@@ -16,30 +18,46 @@ const INTRO_GREETINGS = [
   { text: "Aweh." },
 ];
 
-export default function LandingPage() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const problemRef = useRef<HTMLElement>(null);
+function PageContent() {
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const demoRef = useRef<HTMLElement>(null);
+  const searchParams = useSearchParams();
+  const referredBy = searchParams.get("ref") ?? undefined;
 
-  const openModal = useCallback(() => setModalOpen(true), []);
-  const closeModal = useCallback(() => setModalOpen(false), []);
+  const openSheet = useCallback(() => setSheetOpen(true), []);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
 
-  const handleLearnMore = useCallback(() => {
-    problemRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollToDemo = useCallback(() => {
+    demoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
   return (
     <ArcRevealHero greetings={INTRO_GREETINGS} storageKey="howzit-intro">
-      <Navbar onJoinClick={openModal} />
+      <Navbar onJoinClick={openSheet} />
 
       <main>
-        <Hero onJoinClick={openModal} onLearnMoreClick={handleLearnMore} />
-        <Problem ref={problemRef} />
-        <Solution />
-        <FinalCTA onJoinClick={openModal} />
+        <Hero onJoinClick={openSheet} onLearnMoreClick={scrollToDemo} />
+        <InteractiveAppDemo ref={demoRef} onJoinClick={openSheet} />
+        <NetworkStory />
+        <FirstWeekTimeline />
+        <EndingSection onJoinClick={openSheet} />
       </main>
 
       <Footer />
-      <WaitlistModal isOpen={modalOpen} onClose={closeModal} />
+
+      <WaitlistSheet
+        isOpen={sheetOpen}
+        onClose={closeSheet}
+        referredBy={referredBy}
+      />
     </ArcRevealHero>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <Suspense>
+      <PageContent />
+    </Suspense>
   );
 }
