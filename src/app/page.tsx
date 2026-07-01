@@ -6,7 +6,6 @@ import { ArcRevealHero } from "@/components/shared/ArcRevealHero";
 import { Navbar } from "@/components/sections/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { InteractiveAppDemo } from "@/components/sections/InteractiveAppDemo";
-import { CapeTownSection } from "@/components/sections/CapeTownSection";
 import { ProblemSection } from "@/components/sections/ProblemSection";
 import { FirstWeekTimeline } from "@/components/sections/FirstWeekTimeline";
 import { WaitlistSheet } from "@/components/sections/WaitlistSheet";
@@ -39,7 +38,6 @@ function PageContent() {
 
       <main>
         <Hero onJoinClick={openSheet} onLearnMoreClick={scrollToDemo} />
-        <CapeTownSection />
         <InteractiveAppDemo ref={demoRef} onJoinClick={openSheet} />
         <ProblemSection />
         <FirstWeekTimeline />
