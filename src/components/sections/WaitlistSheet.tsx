@@ -437,7 +437,7 @@ export function WaitlistSheet({ isOpen, onClose, referredBy, onSuccess }: Waitli
                       </h2>
                       <p className="mt-1 text-sm text-[var(--warm-500)]">
                         {step === 1
-                          ? "Be among the first to get access."
+                          ? "Free forever. Be among the first to get access."
                           : "Select everything that applies."}
                       </p>
                     </div>

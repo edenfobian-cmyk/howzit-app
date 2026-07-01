@@ -86,6 +86,7 @@ export function EndingSection({ onJoinClick }: EndingSectionProps) {
           >
             Join the Founding Members
           </button>
+          <p className="text-sm text-white/30">Free forever. No credit card required.</p>
 
           <a
             href={INSTAGRAM_URL}

@@ -118,6 +118,10 @@ export function Hero({ onJoinClick, onLearnMoreClick, countKey }: HeroProps) {
             Learn more
             <ArrowDown size={14} />
           </button>
+          <span className="flex items-center gap-1.5 text-sm text-[var(--warm-500)]">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-[10px] font-black text-green-700">✓</span>
+            Free forever. No credit card.
+          </span>
         </motion.div>
 
         {/* Social proof */}
