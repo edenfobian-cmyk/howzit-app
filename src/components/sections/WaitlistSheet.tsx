@@ -78,7 +78,7 @@ function Step1({
           </label>
           <Input
             {...register("first_name")}
-            placeholder="Jordan"
+            placeholder="Nelson"
             error={!!errors.first_name}
           />
           {errors.first_name && (
@@ -91,7 +91,7 @@ function Step1({
           </label>
           <Input
             {...register("surname")}
-            placeholder="Williams"
+            placeholder="Mandela"
             error={!!errors.surname}
           />
           {errors.surname && (
@@ -107,7 +107,7 @@ function Step1({
         <Input
           {...register("email")}
           type="email"
-          placeholder="thando@email.com"
+          placeholder="nelsonmandela@gmail.com"
           error={!!errors.email}
         />
         {errors.email && (
