@@ -5,14 +5,14 @@ import { FIRST_WEEK } from "@/constants";
 
 export function FirstWeekTimeline() {
   return (
-    <section className="overflow-hidden bg-white px-6 py-28 sm:px-12">
+    <section className="overflow-hidden bg-white px-6 py-16 sm:px-12">
       <div className="mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6 }}
-          className="mb-14"
+          className="mb-10"
         >
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--orange)]">
             What happens next

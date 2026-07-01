@@ -1,6 +1,12 @@
 "use client";
 
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   AnimatePresence,
   motion,
@@ -8,438 +14,402 @@ import {
   useTransform,
   type PanInfo,
 } from "framer-motion";
-import {
-  Briefcase,
-  Calendar,
-  GraduationCap,
-  Heart,
-  MapPin,
-  MessageCircle,
-  Rocket,
-  Users,
-  X,
-} from "lucide-react";
+import { Heart, MapPin, MessageCircle, X } from "lucide-react";
 
-// ── SA card data ──────────────────────────────────────────────────
-const SA_CARDS = [
+// ── Card data with Unsplash photos ─────────────────────────────────
+const CARDS = [
   {
-    id: 1,
-    name: "Aaliyah Davids",
-    initials: "AD",
-    color: "#FF6A00",
-    title: "Looking for a finance mentor",
-    location: "Cape Town · UCT",
-    description: "Actuarial science student trying to break into financial services.",
-    tags: ["Finance", "Student", "UCT"],
-    lookingFor: "Mentor",
-    icon: GraduationCap,
+    id: "1",
     type: "person" as const,
-  },
-  {
-    id: 2,
-    name: "Seedlab Internship",
-    initials: "SL",
-    color: "#1A1815",
-    title: "Software Engineering Internship",
-    location: "Cape Town · Hybrid · Paid",
-    description: "YC-backed fintech building for SA. 3-month paid role for devs.",
-    tags: ["Engineering", "Fintech", "Paid"],
-    lookingFor: "Graduate Engineer",
-    icon: Briefcase,
-    type: "opportunity" as const,
-  },
-  {
-    id: 3,
-    name: "Kabelo Sithole",
-    initials: "KS",
-    color: "#4A607C",
-    title: "Co-founder wanted",
-    location: "Johannesburg",
-    description: "Building last-mile delivery for township businesses. Need a technical partner.",
-    tags: ["Founder", "Logistics", "Equity"],
-    lookingFor: "Technical Co-founder",
-    icon: Rocket,
-    type: "person" as const,
-  },
-  {
-    id: 4,
-    name: "Refiloe Dlamini",
-    initials: "RD",
-    color: "#4A7C59",
-    title: "VC Analyst · Open to mentoring",
-    location: "Sandton",
-    description: "Helping 1–2 founders in EdTech or HealthTech. Pre-seed focus.",
-    tags: ["Mentor", "Investor", "EdTech"],
-    lookingFor: "Ambitious Founder",
-    icon: Users,
-    type: "person" as const,
-  },
-  {
-    id: 5,
-    name: "CT Startup Week",
-    initials: "CT",
-    color: "#7C4A4A",
-    title: "Networking night · Free entry",
-    location: "V&A Waterfront · Next Friday 7pm",
-    description: "300+ founders, builders and investors. Low-key vibes, big connections.",
-    tags: ["Event", "Free", "Founders"],
-    lookingFor: "Attendees",
-    icon: Calendar,
-    type: "opportunity" as const,
-  },
-  {
-    id: 6,
-    name: "Lwandle Nkosi",
-    initials: "LN",
-    color: "#6A4A7C",
-    title: "Clothing brand founder",
+    name: "Zara M.",
+    age: 24,
+    role: "UX Designer",
     location: "Cape Town",
-    description: "Building a streetwear brand from scratch. Looking for a creative marketer.",
-    tags: ["Fashion", "Creative", "Startup"],
-    lookingFor: "Marketer",
-    icon: Users,
-    type: "person" as const,
+    bio: "Freelancing and looking for a startup to join as design lead. I work fast and obsessively.",
+    tags: ["Design", "Branding", "Mobile"],
+    lookingFor: "Startup or studio to join",
+    photo: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop&crop=faces,center",
+    accent: "#FF6A00",
   },
-];
+  {
+    id: "2",
+    type: "opportunity" as const,
+    name: "Seedlab",
+    age: null,
+    role: "Software Internship · 3 months · Paid",
+    location: "Cape Town · Hybrid",
+    bio: "Y Combinator-backed fintech building the payments infrastructure for South Africa. Team of 14.",
+    tags: ["React", "TypeScript", "Fintech"],
+    lookingFor: "Junior / graduate developer",
+    photo: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=500&fit=crop",
+    accent: "#1A1815",
+  },
+  {
+    id: "3",
+    type: "person" as const,
+    name: "Liam J.",
+    age: 27,
+    role: "ML Engineer",
+    location: "Cape Town",
+    bio: "Building AI tooling for SMEs. Looking for a co-founder who gets business and people.",
+    tags: ["AI", "Python", "Co-founder"],
+    lookingFor: "Business co-founder",
+    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=faces,center",
+    accent: "#4A607C",
+  },
+  {
+    id: "4",
+    type: "mentor" as const,
+    name: "Nadia K.",
+    age: 34,
+    role: "VC Analyst · 5 years",
+    location: "Sandton",
+    bio: "Open to mentoring 1–2 founders in EdTech or Consumer. Pre-seed focus. DMs open.",
+    tags: ["Investing", "EdTech", "Pre-seed"],
+    lookingFor: "Ambitious early founders",
+    photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=faces,center",
+    accent: "#4A7C59",
+  },
+  {
+    id: "5",
+    type: "event" as const,
+    name: "Startup Night CT",
+    age: null,
+    role: "Free · This Friday 7pm",
+    location: "V&A Waterfront",
+    bio: "300+ builders, founders and investors. Casual vibes. You will know someone here by the end.",
+    tags: ["Networking", "Free", "Founders"],
+    lookingFor: "Anyone building something",
+    photo: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=500&fit=crop",
+    accent: "#7C4A4A",
+  },
+  {
+    id: "6",
+    type: "person" as const,
+    name: "Jordan O.",
+    age: 23,
+    role: "Content Creator · Filmmaker",
+    location: "Cape Town",
+    bio: "Making short-form content for SA brands. Looking for creative projects and brand collabs.",
+    tags: ["Film", "Content", "Creative"],
+    lookingFor: "Brand partnerships",
+    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=faces,center",
+    accent: "#6A4A7C",
+  },
+] as const;
 
-const MATCH_CARD = SA_CARDS[2];
+type Card = (typeof CARDS)[number];
 
-// ── Sub-screens ───────────────────────────────────────────────────
-function LockScreen() {
-  const now = new Date();
-  const time = now.toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit", hour12: false });
-  return (
-    <motion.div
-      key="lock"
-      className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--charcoal)]"
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.p
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="text-5xl font-black text-white"
-      >
-        {time}
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        transition={{ delay: 0.3 }}
-        className="mt-2 text-xs text-white"
-      >
-        Swipe up to open Howzit
-      </motion.p>
-    </motion.div>
-  );
-}
+const TYPE_LABEL: Record<Card["type"], string> = {
+  person: "Profile",
+  opportunity: "Opportunity",
+  mentor: "Mentor",
+  event: "Event",
+};
 
-function MatchScreen({ onDone }: { onDone: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 2400);
-    return () => clearTimeout(t);
-  }, [onDone]);
+const TYPE_BG: Record<Card["type"], string> = {
+  person: "rgba(255,106,0,0.12)",
+  opportunity: "rgba(26,24,21,0.08)",
+  mentor: "rgba(74,124,89,0.12)",
+  event: "rgba(124,74,74,0.12)",
+};
 
-  return (
-    <motion.div
-      key="match"
-      className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--charcoal)] px-6 text-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 0.35 }}
-    >
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: [0, 1.3, 1] }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--orange)]"
-      >
-        <Heart size={36} fill="white" className="text-white" />
-      </motion.div>
-      <motion.h2
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25 }}
-        className="text-2xl font-black text-white"
-      >
-        It&apos;s a match.
-      </motion.h2>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.6 }}
-        transition={{ delay: 0.45 }}
-        className="mt-2 text-sm text-white"
-      >
-        You and {MATCH_CARD.name} connected.
-      </motion.p>
-    </motion.div>
-  );
-}
+const TYPE_COLOR: Record<Card["type"], string> = {
+  person: "#FF6A00",
+  opportunity: "#1A1815",
+  mentor: "#4A7C59",
+  event: "#7C4A4A",
+};
 
-type Msg = { text: string; from: "me" | "them" };
-
-function ChatScreen({ onDone }: { onDone: () => void }) {
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-
-  useEffect(() => {
-    const seq: { text: string; from: "me" | "them"; delay: number }[] = [
-      { text: "Hey! Excited to connect 🙌", from: "them", delay: 500 },
-      { text: "Same! Love what you're building.", from: "me", delay: 1400 },
-      { text: "Are you free for a quick call this week?", from: "them", delay: 2400 },
-    ];
-    const timers = seq.map(({ text, from, delay }) =>
-      setTimeout(() => setMsgs((p) => [...p, { text, from }]), delay)
-    );
-    const done = setTimeout(onDone, 4800);
-    return () => { timers.forEach(clearTimeout); clearTimeout(done); };
-  }, [onDone]);
-
-  return (
-    <motion.div
-      key="chat"
-      className="absolute inset-0 flex flex-col bg-white"
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "-100%" }}
-      transition={{ type: "spring", stiffness: 340, damping: 32 }}
-    >
-      {/* header */}
-      <div className="flex items-center gap-3 border-b border-[var(--warm-200)] px-5 pb-4 pt-10">
-        <div
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-xs font-black text-white"
-          style={{ backgroundColor: MATCH_CARD.color }}
-        >
-          {MATCH_CARD.initials}
-        </div>
-        <div>
-          <p className="text-sm font-bold text-[var(--charcoal)]">{MATCH_CARD.name}</p>
-          <p className="flex items-center gap-1 text-[11px] text-green-500">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500" /> Online
-          </p>
-        </div>
-      </div>
-
-      {/* messages */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
-        <AnimatePresence>
-          {msgs.map((m, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10, scale: 0.92 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                  m.from === "me"
-                    ? "rounded-br-sm bg-[var(--orange)] text-white"
-                    : "rounded-bl-sm bg-[var(--warm-100)] text-[var(--charcoal)]"
-                }`}
-              >
-                {m.text}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {/* input bar */}
-      <div className="flex items-center gap-3 border-t border-[var(--warm-200)] px-5 py-3">
-        <div className="flex-1 rounded-full bg-[var(--warm-100)] px-4 py-2.5 text-xs text-[var(--warm-500)]">
-          Type a message...
-        </div>
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--orange)]">
-          <MessageCircle size={14} className="text-white" />
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Swipe card ────────────────────────────────────────────────────
+// ── Swipeable card ─────────────────────────────────────────────────
 function SwipeCard({
   card,
   index,
   isTop,
+  hinted,
   onSwipe,
 }: {
-  card: (typeof SA_CARDS)[0];
+  card: Card;
   index: number;
   isTop: boolean;
+  hinted: boolean;
   onSwipe: (dir: "left" | "right") => void;
 }) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-18, 18]);
-  const likeOpacity = useTransform(x, [30, 100], [0, 1]);
-  const nopeOpacity = useTransform(x, [-100, -30], [1, 0]);
-  const Icon = card.icon;
+  const rotate = useTransform(x, [-180, 180], [-22, 22]);
+  const likeOpacity = useTransform(x, [40, 110], [0, 1]);
+  const nopeOpacity = useTransform(x, [-110, -40], [1, 0]);
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
-    if (Math.abs(info.offset.x) > 90) onSwipe(info.offset.x > 0 ? "right" : "left");
+    if (Math.abs(info.offset.x) > 80 || Math.abs(info.velocity.x) > 500) {
+      onSwipe(info.offset.x > 0 ? "right" : "left");
+    }
   };
 
   return (
     <motion.div
-      className="absolute inset-0"
+      className="absolute inset-0 cursor-grab active:cursor-grabbing"
       style={{
         x: isTop ? x : 0,
         rotate: isTop ? rotate : 0,
         zIndex: 10 - index,
         scale: 1 - index * 0.04,
         y: index * 10,
+        opacity: 1 - index * 0.18,
       }}
       drag={isTop ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.7}
-      onDragEnd={handleDragEnd}
-      animate={{ opacity: 1 - index * 0.2 }}
-      transition={{ duration: 0.2 }}
+      dragElastic={0.75}
+      onDragEnd={isTop ? handleDragEnd : undefined}
+      animate={
+        isTop && hinted
+          ? { x: [0, -18, 15, -10, 6, 0] }
+          : { x: 0 }
+      }
+      transition={
+        isTop && hinted
+          ? { duration: 0.9, delay: 0, ease: "easeInOut" }
+          : { duration: 0 }
+      }
     >
       {/* Card */}
-      <div className="flex h-full w-full flex-col rounded-[1.4rem] bg-white p-5 shadow-lg">
-        {/* Like / Nope labels */}
+      <div className="flex h-full w-full flex-col overflow-hidden rounded-[1.4rem] bg-white shadow-[0_8px_30px_rgba(26,24,21,0.14)]">
+
+        {/* Like / Nope stamps */}
         {isTop && (
           <>
             <motion.div
               style={{ opacity: likeOpacity }}
-              className="pointer-events-none absolute left-4 top-8 rotate-[-12deg] rounded-lg border-2 border-green-500 px-3 py-1 text-sm font-black uppercase text-green-500"
+              className="pointer-events-none absolute left-4 top-6 z-20 rotate-[-14deg] rounded-xl border-2 border-green-500 px-3 py-1.5 text-sm font-black uppercase tracking-wide text-green-500"
             >
               Like
             </motion.div>
             <motion.div
               style={{ opacity: nopeOpacity }}
-              className="pointer-events-none absolute right-4 top-8 rotate-[12deg] rounded-lg border-2 border-red-500 px-3 py-1 text-sm font-black uppercase text-red-500"
+              className="pointer-events-none absolute right-4 top-6 z-20 rotate-[14deg] rounded-xl border-2 border-red-500 px-3 py-1.5 text-sm font-black uppercase tracking-wide text-red-500"
             >
               Nope
             </motion.div>
           </>
         )}
 
-        {/* Type badge */}
-        <div className="flex items-center justify-between">
-          <span
-            className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
-            style={{ backgroundColor: `${card.color}15`, color: card.color }}
-          >
-            <Icon size={9} strokeWidth={2.5} />
-            {card.type === "person" ? "Person" : "Opportunity"}
-          </span>
-        </div>
+        {/* Photo */}
+        <div className="relative h-[58%] flex-shrink-0 overflow-hidden">
+          <img
+            src={card.photo}
+            alt={card.name}
+            className="h-full w-full object-cover"
+            draggable={false}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
 
-        {/* Avatar + content */}
-        <div className="mt-4 flex gap-3">
-          <div
-            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl text-sm font-black text-white"
-            style={{ backgroundColor: card.color }}
-          >
-            {card.initials}
+          {/* Type badge */}
+          <div className="absolute left-3 top-3">
+            <span
+              className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+              style={{ backgroundColor: TYPE_BG[card.type], color: TYPE_COLOR[card.type] }}
+            >
+              {TYPE_LABEL[card.type]}
+            </span>
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-black leading-snug text-[var(--charcoal)]">{card.name}</p>
-            <p className="mt-0.5 flex items-center gap-1 text-[11px] text-[var(--warm-500)]">
-              <MapPin size={9} /> {card.location}
+
+          {/* Name + location overlaid */}
+          <div className="absolute bottom-0 left-0 p-4">
+            <p className="text-lg font-black leading-tight text-white">
+              {card.name}
+              {card.age != null && (
+                <span className="ml-1.5 text-sm font-semibold text-white/70">
+                  {card.age}
+                </span>
+              )}
+            </p>
+            <p className="flex items-center gap-1 text-xs text-white/70">
+              <MapPin size={9} strokeWidth={2.5} />
+              {card.location}
             </p>
           </div>
         </div>
 
-        <p className="mt-3 text-xs font-semibold text-[var(--charcoal)]">{card.title}</p>
-        <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--warm-500)]">{card.description}</p>
-
-        <div className="mt-3 flex flex-wrap gap-1">
-          {card.tags.map((t) => (
-            <span key={t} className="rounded-full border border-[var(--warm-200)] px-2 py-0.5 text-[10px] text-[var(--warm-500)]">
-              {t}
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-3">
-          <span className="inline-block rounded-full bg-[var(--orange-dim)] px-3 py-1 text-[10px] font-semibold text-[var(--orange)]">
-            Looking for: {card.lookingFor}
-          </span>
+        {/* Content */}
+        <div className="flex flex-1 flex-col justify-between p-4">
+          <div>
+            <p className="text-xs font-bold text-[var(--charcoal)]">{card.role}</p>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--warm-500)]">
+              {card.bio}
+            </p>
+          </div>
+          <div>
+            <div className="mt-2 flex flex-wrap gap-1">
+              {card.tags.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full border border-[var(--warm-200)] px-2 py-0.5 text-[10px] font-medium text-[var(--warm-500)]"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+            <div className="mt-2">
+              <span
+                className="inline-block rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                style={{ backgroundColor: `${card.accent}12`, color: card.accent }}
+              >
+                {card.lookingFor}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
   );
 }
 
-// ── Phone mockup ──────────────────────────────────────────────────
-type Screen = "lock" | "app" | "match" | "chat" | "cta";
+// ── Match screen ───────────────────────────────────────────────────
+function MatchScreen({ name, photo, onDone }: { name: string; photo: string; onDone: () => void }) {
+  useEffect(() => { const t = setTimeout(onDone, 2600); return () => clearTimeout(t); }, [onDone]);
+  return (
+    <motion.div
+      className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--charcoal)] px-6 text-center"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 1.04 }}
+    >
+      <div className="mb-5 flex -space-x-5">
+        {[photo, "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face"].map((src, i) => (
+          <motion.img
+            key={i} src={src} alt=""
+            className="h-20 w-20 rounded-full border-4 border-[var(--charcoal)] object-cover"
+            initial={{ scale: 0, rotate: i === 0 ? -15 : 15 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: i * 0.12, type: "spring", stiffness: 320, damping: 24 }}
+          />
+        ))}
+      </div>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <p className="text-lg font-black text-[var(--orange)]">It&apos;s a match.</p>
+        <p className="mt-1 text-sm text-white/60">You and {name} both swiped right.</p>
+      </motion.div>
+    </motion.div>
+  );
+}
 
-function PhoneMockup({ onJoinClick }: { onJoinClick: () => void }) {
-  const [screen, setScreen] = useState<Screen>("lock");
-  const [queue, setQueue] = useState(SA_CARDS);
-  const [rightSwipes, setRightSwipes] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+// ── Chat screen ────────────────────────────────────────────────────
+type Msg = { text: string; from: "me" | "them" };
 
-  // Wake phone
+function ChatScreen({ photo, name, onDone }: { photo: string; name: string; onDone: () => void }) {
+  const [msgs, setMsgs] = useState<Msg[]>([]);
   useEffect(() => {
-    const t1 = setTimeout(() => setScreen("app"), 1400);
-    return () => clearTimeout(t1);
-  }, []);
+    const seq: { text: string; from: "me" | "them"; delay: number }[] = [
+      { from: "them", text: "Hey! Love your work 👀", delay: 500 },
+      { from: "me",   text: "Thanks! What are you building?", delay: 1500 },
+      { from: "them", text: "Can we jump on a call this week?", delay: 2600 },
+    ];
+    const timers = seq.map(({ text, from, delay }) =>
+      setTimeout(() => setMsgs((p) => [...p, { text, from }]), delay)
+    );
+    const done = setTimeout(onDone, 5200);
+    return () => { timers.forEach(clearTimeout); clearTimeout(done); };
+  }, [onDone]);
 
-  const advance = useCallback((dir: "left" | "right") => {
+  return (
+    <motion.div
+      className="absolute inset-0 flex flex-col bg-white"
+      initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }}
+      transition={{ type: "spring", stiffness: 350, damping: 34 }}
+    >
+      <div className="flex items-center gap-3 border-b border-[var(--warm-200)] px-5 py-3 pt-10">
+        <img src={photo} alt={name} className="h-9 w-9 rounded-full object-cover" />
+        <div>
+          <p className="text-sm font-bold text-[var(--charcoal)]">{name}</p>
+          <p className="text-[10px] text-green-500">● Online now</p>
+        </div>
+      </div>
+      <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
+        <AnimatePresence>
+          {msgs.map((m, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 8, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}
+            >
+              <div className={`max-w-[78%] rounded-2xl px-3.5 py-2 text-[11px] leading-relaxed ${
+                m.from === "me" ? "rounded-br-sm bg-[var(--orange)] text-white" : "rounded-bl-sm bg-[var(--warm-100)] text-[var(--charcoal)]"
+              }`}>
+                {m.text}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+      <div className="flex items-center gap-2 border-t border-[var(--warm-200)] px-4 py-3">
+        <div className="flex-1 rounded-full bg-[var(--warm-100)] px-4 py-2 text-[11px] text-[var(--warm-500)]">
+          Type a message...
+        </div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--orange)]">
+          <MessageCircle size={13} className="text-white" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Phone shell ────────────────────────────────────────────────────
+type Screen = "app" | "match" | "chat" | "cta";
+
+function PhoneShell({ onJoinClick }: { onJoinClick: () => void }) {
+  const [screen, setScreen] = useState<Screen>("app");
+  const [queue, setQueue] = useState([...CARDS]);
+  const [hinted, setHinted] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const lastMatchRef = useRef<{ name: string; photo: string } | null>(null);
+
+  // Swipe hint after 2.5s if user hasn't touched anything
+  useEffect(() => {
+    if (hasInteracted) return;
+    const t = setTimeout(() => setHinted(true), 2500);
+    return () => clearTimeout(t);
+  }, [hasInteracted]);
+
+  const handleSwipe = useCallback((dir: "left" | "right") => {
     if (screen !== "app") return;
-    if (dir === "right") {
-      const next = rightSwipes + 1;
-      setRightSwipes(next);
-      if (next === 3) {
-        setScreen("match");
-        return;
-      }
+    setHasInteracted(true);
+    setHinted(false);
+
+    const top = queue[0];
+    if (top && dir === "right" && (top.type === "person" || top.type === "mentor")) {
+      lastMatchRef.current = { name: top.name, photo: top.photo };
+      setTimeout(() => setScreen("match"), 280);
     }
-    setQueue((prev) => {
-      const [first, ...rest] = prev;
-      return [...rest, first];
-    });
-  }, [screen, rightSwipes]);
 
-  // Auto-cycle
-  useEffect(() => {
-    if (screen !== "app") return;
-    timerRef.current = setInterval(() => advance("right"), 2800);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [advance, screen]);
-
-  const handleDragEnd = (dir: "left" | "right") => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    advance(dir);
-    timerRef.current = setInterval(() => advance("right"), 2800);
-  };
+    setTimeout(() => {
+      setQueue((prev) => {
+        const [first, ...rest] = prev;
+        return [...rest, first];
+      });
+    }, 260);
+  }, [screen, queue]);
 
   const visible = queue.slice(0, 3);
 
   return (
-    <div className="relative h-[660px] w-[320px]">
-      {/* Phone frame */}
-      <div className="relative h-full w-full overflow-hidden rounded-[48px] border-[12px] border-[var(--charcoal)] bg-[var(--charcoal)] shadow-[0_40px_80px_rgba(26,24,21,0.45),0_10px_30px_rgba(26,24,21,0.25)]">
-        {/* Dynamic island / notch */}
-        <div className="absolute left-1/2 top-0 z-30 h-7 w-28 -translate-x-1/2 rounded-b-[1.25rem] bg-[var(--charcoal)]" />
+    <div className="relative h-[660px] w-[310px] flex-shrink-0">
+      {/* Frame */}
+      <div className="relative h-full w-full overflow-hidden rounded-[48px] border-[12px] border-[var(--charcoal)] bg-[var(--charcoal)] shadow-[0_40px_80px_rgba(26,24,21,0.4),0_12px_32px_rgba(26,24,21,0.3)]">
+        {/* Dynamic island */}
+        <div className="absolute left-1/2 top-0 z-30 h-7 w-28 -translate-x-1/2 rounded-b-[1.2rem] bg-[var(--charcoal)]" />
+
         {/* Screen */}
         <div className="relative h-full w-full overflow-hidden rounded-[38px] bg-[var(--off-white)]">
           <AnimatePresence mode="wait">
-            {screen === "lock" && <LockScreen key="lock" />}
 
+            {/* Main app */}
             {screen === "app" && (
-              <motion.div
-                key="app"
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* App status bar */}
-                <div className="flex items-center justify-between px-6 pt-10 pb-3">
+              <motion.div key="app" className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                {/* Status bar */}
+                <div className="flex items-center justify-between px-6 pt-10 pb-2">
                   <span className="text-[11px] font-black text-[var(--charcoal)]">Howzit</span>
                   <span className="text-[10px] text-[var(--warm-500)]">{queue[0]?.type}</span>
                 </div>
 
                 {/* Cards */}
-                <div className="relative mx-4 h-[500px]">
+                <div className="relative mx-3 h-[500px]">
                   <AnimatePresence>
                     {visible.map((card, i) => (
                       <SwipeCard
@@ -447,54 +417,62 @@ function PhoneMockup({ onJoinClick }: { onJoinClick: () => void }) {
                         card={card}
                         index={i}
                         isTop={i === 0}
-                        onSwipe={handleDragEnd}
+                        hinted={i === 0 && hinted}
+                        onSwipe={handleSwipe}
                       />
                     ))}
                   </AnimatePresence>
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex items-center justify-center gap-5 pt-3">
-                  <button
-                    onClick={() => advance("left")}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--warm-200)] bg-white text-[var(--warm-500)] shadow-sm transition-transform hover:scale-105"
+                <div className="mt-4 flex items-center justify-center gap-5">
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleSwipe("left")}
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--warm-200)] bg-white text-[var(--warm-500)] shadow-sm"
                   >
                     <X size={18} />
-                  </button>
-                  <button
-                    onClick={() => advance("right")}
-                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--orange)] text-white shadow-[0_6px_20px_rgba(255,106,0,0.45)] transition-transform hover:scale-105"
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleSwipe("right")}
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--orange)] text-white shadow-[0_6px_20px_rgba(255,106,0,0.45)]"
                   >
                     <Heart size={20} fill="currentColor" />
-                  </button>
+                  </motion.button>
                 </div>
               </motion.div>
             )}
 
-            {screen === "match" && (
-              <MatchScreen key="match" onDone={() => setScreen("chat")} />
+            {screen === "match" && lastMatchRef.current && (
+              <MatchScreen
+                key="match"
+                name={lastMatchRef.current.name}
+                photo={lastMatchRef.current.photo}
+                onDone={() => setScreen("chat")}
+              />
             )}
 
-            {screen === "chat" && (
-              <ChatScreen key="chat" onDone={() => setScreen("cta")} />
+            {screen === "chat" && lastMatchRef.current && (
+              <ChatScreen
+                key="chat"
+                photo={lastMatchRef.current.photo}
+                name={lastMatchRef.current.name}
+                onDone={() => setScreen("cta")}
+              />
             )}
 
             {screen === "cta" && (
-              <motion.div
-                key="cta"
-                className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--charcoal)] p-8 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
+              <motion.div key="cta" className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--charcoal)] p-8 text-center"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               >
-                <p className="text-base font-bold text-white/60">Imagine if these were real.</p>
+                <p className="text-sm font-semibold text-white/40">Imagine if these were real.</p>
                 <p className="mt-2 text-2xl font-black text-white">Join the waitlist.</p>
-                <p className="mt-3 text-sm text-white/40">Every one of those cards could be a real opportunity waiting for you.</p>
                 <button
                   onClick={onJoinClick}
-                  className="mt-7 rounded-full bg-[var(--orange)] px-7 py-3 text-sm font-black text-white shadow-[0_4px_20px_rgba(255,106,0,0.4)] transition-transform hover:scale-105"
+                  className="mt-6 rounded-full bg-[var(--orange)] px-7 py-3 text-sm font-black text-white shadow-[0_4px_20px_rgba(255,106,0,0.45)]"
                 >
-                  Get Early Access
+                  Get early access
                 </button>
               </motion.div>
             )}
@@ -503,18 +481,18 @@ function PhoneMockup({ onJoinClick }: { onJoinClick: () => void }) {
       </div>
 
       {/* Phone shine */}
-      <div className="pointer-events-none absolute inset-0 rounded-[48px] bg-gradient-to-br from-white/10 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 rounded-[48px] bg-gradient-to-br from-white/8 to-transparent" />
     </div>
   );
 }
 
-// ── Demo section (exported) ────────────────────────────────────────
+// ── Exported demo section ──────────────────────────────────────────
 export const InteractiveAppDemo = forwardRef<HTMLElement, { onJoinClick: () => void }>(
   ({ onJoinClick }, ref) => {
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
-    const rotateX = useTransform(mouseY, [-300, 300], [4, -4]);
-    const rotateY = useTransform(mouseX, [-300, 300], [-4, 4]);
+    const rotateX = useTransform(mouseY, [-300, 300], [3.5, -3.5]);
+    const rotateY = useTransform(mouseX, [-300, 300], [-3.5, 3.5]);
 
     useEffect(() => {
       const handler = (e: MouseEvent) => {
@@ -526,69 +504,63 @@ export const InteractiveAppDemo = forwardRef<HTMLElement, { onJoinClick: () => v
     }, [mouseX, mouseY]);
 
     return (
-      <section
-        ref={ref as React.RefObject<HTMLElement>}
-        className="overflow-hidden bg-white px-6 py-24 sm:px-12"
-      >
-        <div className="mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2 lg:gap-20">
-          {/* Left: copy */}
+      <section ref={ref as React.RefObject<HTMLElement>} className="overflow-hidden bg-white px-6 py-16 sm:px-12">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
+
+          {/* Copy — condensed */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="order-2 lg:order-1"
           >
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--orange)]">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--orange)]">
               The product
             </p>
             <h2 className="text-3xl font-black leading-tight tracking-tight text-[var(--charcoal)] sm:text-4xl">
-              Swipe through people, jobs, mentors and opportunities that actually make sense for you.
+              Swipe to find your people.
             </h2>
-            <p className="mt-5 text-base leading-relaxed text-[var(--warm-500)]">
-              Not everyone is born into the right network. That shouldn&apos;t decide your future.
+            <p className="mt-4 text-base leading-relaxed text-[var(--warm-500)]">
+              People, jobs, mentors and opportunities — matched to what you&apos;re actually looking for.
+              Not a job board. Not another LinkedIn.
             </p>
 
-            {/* 3 steps */}
-            <ol className="mt-8 space-y-4">
+            <ol className="mt-7 space-y-3">
               {[
-                "Choose what you're looking for.",
-                "Swipe through real opportunities.",
-                "Match and start the conversation.",
-              ].map((step, i) => (
-                <li key={i} className="flex items-start gap-4">
-                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-white">
+                "Tell us what you're looking for.",
+                "Swipe through matched opportunities.",
+                "Match with someone. Start the conversation.",
+              ].map((s, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-white mt-0.5">
                     {i + 1}
                   </span>
-                  <span className="pt-0.5 text-sm font-medium text-[var(--charcoal)]">{step}</span>
+                  <span className="text-sm text-[var(--charcoal)]">{s}</span>
                 </li>
               ))}
             </ol>
 
             <button
               onClick={onJoinClick}
-              className="mt-10 rounded-full bg-[var(--orange)] px-7 py-3.5 text-sm font-bold text-white shadow-[0_6px_20px_rgba(255,106,0,0.3)] transition-transform hover:scale-[1.03] active:scale-95"
+              className="mt-8 rounded-full bg-[var(--orange)] px-7 py-3.5 text-sm font-bold text-white shadow-[0_6px_20px_rgba(255,106,0,0.3)] transition-transform hover:scale-[1.03] active:scale-95"
             >
               Join the Founding Members
             </button>
 
-            <p className="mt-4 text-xs text-[var(--warm-500)]">
-              ← Drag the cards on the phone to try it.
-            </p>
+            <p className="mt-4 text-xs text-[var(--warm-500)]">← Drag the cards to try it.</p>
           </motion.div>
 
-          {/* Right: phone */}
+          {/* Phone */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="flex justify-center"
+            transition={{ duration: 0.65, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="order-1 flex justify-center lg:order-2"
           >
-            <motion.div
-              style={{ perspective: 1000, rotateX, rotateY }}
-              className="will-change-transform"
-            >
-              <PhoneMockup onJoinClick={onJoinClick} />
+            <motion.div style={{ perspective: 1000, rotateX, rotateY }}>
+              <PhoneShell onJoinClick={onJoinClick} />
             </motion.div>
           </motion.div>
         </div>

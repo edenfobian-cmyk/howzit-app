@@ -1,195 +1,155 @@
 "use client";
 
 import * as React from "react";
-import {
-  animate,
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useTransform,
-} from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export type ArcRevealGreeting = {
-  /** Greeting text in the target script */
   text: string;
-  /** Optional `lang` attribute applied to the span (helps screen readers / font rendering) */
   lang?: string;
 };
 
 export interface ArcRevealHeroProps {
-  /** Greetings cycled before the arc reveal. */
   greetings?: ArcRevealGreeting[];
-  /** How long each greeting is held on screen (ms). */
   greetingHold?: number;
-  /** Duration of the curved curtain reveal (ms). */
-  revealDuration?: number;
-  /** Outer `<section>` class. Receives the *post-reveal* surface. */
   className?: string;
-  /** Class for the intro (pre-reveal) overlay surface. */
-  introClassName?: string;
-  /** Class for the cycled greeting `<span>`. */
   greetingClassName?: string;
-  /** Class for the wrapper around `children` (the revealed content). */
-  revealClassName?: string;
-  /**
-   * Optional `sessionStorage` key — when set, the intro plays only once per
-   * session for the same key. Leave unset to replay on every mount.
-   */
   storageKey?: string;
-  /** Content shown after the curtain reveal (the "landing"). */
   children?: React.ReactNode;
 }
 
 const DEFAULT_GREETINGS: ArcRevealGreeting[] = [
-  { text: "Sawubona." },
-  { text: "Heita." },
-  { text: "Aweh." },
+  { text: "People." },
+  { text: "Opportunity." },
+  { text: "Connection." },
+  { text: "Howzit." },
 ];
 
-type Phase = "intro" | "reveal" | "done";
+type Phase = "intro" | "exit" | "done";
+
+function getInitialPhase(storageKey?: string, prefersReducedMotion?: boolean | null): Phase {
+  if (prefersReducedMotion) return "done";
+  if (!storageKey || typeof window === "undefined") return "intro";
+  try {
+    if (window.localStorage.getItem(storageKey) === "done") return "done";
+  } catch {}
+  return "intro";
+}
 
 export function ArcRevealHero({
   greetings = DEFAULT_GREETINGS,
-  greetingHold = 480,
-  revealDuration = 900,
+  greetingHold = 520,
   className,
-  introClassName,
   greetingClassName,
-  revealClassName,
   storageKey,
   children,
 }: ArcRevealHeroProps) {
   const prefersReducedMotion = useReducedMotion();
 
-  const [phase, setPhase] = React.useState<Phase>("intro");
+  const [phase, setPhase] = React.useState<Phase>(() =>
+    getInitialPhase(storageKey, prefersReducedMotion)
+  );
   const [index, setIndex] = React.useState(0);
 
-  // Drive the arc shape from a single 0→1 progress.
-  // The curve is a quadratic bezier with a fixed concavity (control point
-  // sits 25 viewBox units below the chord), translated upward over time:
-  //   t=0 → chord at y=110 (off-screen below)  → no curtain visible
-  //   t=1 → chord at y=-30 (off-screen above)  → full-screen curtain
-  const progress = useMotionValue(0);
-  const arcPath = useTransform(progress, (p: number) => {
-    const edge = 110 - p * 140;
-    const control = edge + 25;
-    return `M 0 ${edge} Q 50 ${control} 100 ${edge} L 100 110 L 0 110 Z`;
-  });
-
-  // Honor reduced-motion + replay-suppression on mount. This reacts to
-  // `prefersReducedMotion` resolving asynchronously post-hydration, so it
-  // must stay an effect rather than a lazy useState initializer.
+  // React to prefersReducedMotion updating after hydration
   React.useEffect(() => {
-    if (prefersReducedMotion) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing from a browser media-query API, not derived from props/state
+    if (prefersReducedMotion && phase !== "done") {
       setPhase("done");
-      return;
     }
-    if (storageKey && typeof window !== "undefined") {
-      try {
-        if (window.sessionStorage.getItem(storageKey) === "done") {
-          setPhase("done");
-        }
-      } catch {
-        /* sessionStorage can throw in private mode — fall through */
-      }
-    }
-  }, [prefersReducedMotion, storageKey]);
+  }, [prefersReducedMotion, phase]);
 
-  // Greeting cycle.
+  // Cycle through greetings, then trigger exit
   React.useEffect(() => {
     if (phase !== "intro") return;
     const isLast = index >= greetings.length - 1;
-    if (isLast) {
-      const t = window.setTimeout(() => setPhase("reveal"), greetingHold + 220);
-      return () => window.clearTimeout(t);
-    }
-    const t = window.setTimeout(() => setIndex((i) => i + 1), greetingHold);
+    const delay = isLast ? greetingHold + 180 : greetingHold;
+    const t = window.setTimeout(() => {
+      if (isLast) {
+        setPhase("exit");
+      } else {
+        setIndex((i) => i + 1);
+      }
+    }, delay);
     return () => window.clearTimeout(t);
   }, [phase, index, greetingHold, greetings.length]);
 
-  // Drive the curtain reveal.
-  React.useEffect(() => {
-    if (phase !== "reveal") return;
-    const controls = animate(progress, 1, {
-      duration: revealDuration / 1000,
-      ease: [0.85, 0, 0.15, 1],
-      onComplete: () => {
-        if (storageKey && typeof window !== "undefined") {
-          try {
-            window.sessionStorage.setItem(storageKey, "done");
-          } catch {
-            /* ignore */
-          }
-        }
-        setPhase("done");
-      },
-    });
-    return () => controls.stop();
-  }, [phase, progress, revealDuration, storageKey]);
+  const markDone = React.useCallback(() => {
+    if (storageKey) {
+      try { window.localStorage.setItem(storageKey, "done"); } catch {}
+    }
+    setPhase("done");
+  }, [storageKey]);
 
   const showOverlay = phase !== "done";
   const current = greetings[Math.min(index, greetings.length - 1)];
 
   return (
-    <section
-      aria-label="Hero"
-      className={cn(
-        "relative isolate w-full overflow-hidden bg-background text-foreground",
-        className,
-      )}
-    >
-      <div className={cn("relative z-0", revealClassName)}>{children}</div>
+    <div className={cn("relative w-full", className)}>
+      {children}
 
       <AnimatePresence>
         {showOverlay && (
           <motion.div
-            key="arc-reveal-overlay"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+            key="overlay"
             className={cn(
-              "fixed inset-x-0 top-0 z-30 h-screen overflow-hidden bg-foreground",
-              introClassName,
+              "fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1A1815]",
             )}
+            initial={{ y: 0 }}
+            animate={{ y: 0 }}
+            exit={{ y: "-100%" }}
+            transition={{
+              duration: phase === "exit" ? 0.85 : 0,
+              ease: [0.76, 0, 0.24, 1],
+            }}
+            onAnimationComplete={(def) => {
+              if (def && typeof def === "object" && "y" in def && def.y === "-100%") {
+                markDone();
+              }
+            }}
           >
-            {/* Cycled greeting */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <AnimatePresence mode="wait">
-                {phase === "intro" && current && (
-                  <motion.span
-                    key={`${index}-${current.text}`}
-                    lang={current.lang}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                    className={cn(
-                      "select-none px-6 text-center text-5xl font-semibold tracking-tight text-background sm:text-6xl md:text-7xl",
-                      greetingClassName,
-                    )}
-                  >
-                    {current.text}
-                  </motion.span>
-                )}
-              </AnimatePresence>
+            {/* Small logo watermark */}
+            <div className="absolute left-8 top-8 text-white/20 text-sm font-black tracking-tight select-none">
+              Howzit
             </div>
 
-            {/* Rising curved curtain */}
-            <svg
-              className="pointer-events-none absolute inset-0 h-full w-full"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <motion.path d={arcPath} style={{ fill: "var(--background)" }} />
-            </svg>
+            {/* Greeting word */}
+            <AnimatePresence mode="wait">
+              {phase === "intro" && current && (
+                <motion.span
+                  key={`${index}`}
+                  lang={current.lang}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                  className={cn(
+                    "select-none text-center text-5xl font-black tracking-tight text-white sm:text-6xl md:text-7xl",
+                    index === greetings.length - 1 && "text-[var(--orange)]",
+                    greetingClassName,
+                  )}
+                >
+                  {current.text}
+                </motion.span>
+              )}
+            </AnimatePresence>
+
+            {/* Progress dots */}
+            <div className="absolute bottom-10 flex gap-2">
+              {greetings.map((_, i) => (
+                <div
+                  key={i}
+                  className="h-1 rounded-full transition-all duration-300"
+                  style={{
+                    width: i === index ? "24px" : "6px",
+                    backgroundColor: i === index ? "#FF6A00" : "rgba(255,255,255,0.2)",
+                  }}
+                />
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </div>
   );
 }
 

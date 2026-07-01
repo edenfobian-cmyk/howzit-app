@@ -23,7 +23,7 @@ export function EndingSection({ onJoinClick }: EndingSectionProps) {
   }, [started, wordIndex]);
 
   return (
-    <section className="relative overflow-hidden bg-[var(--charcoal)] px-6 py-32 sm:px-12">
+    <section className="relative overflow-hidden bg-[var(--charcoal)] px-6 py-24 sm:px-12">
       {/* Ambient orange accent */}
       <div
         className="pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full opacity-10"

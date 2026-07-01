@@ -6,7 +6,7 @@ import { ArcRevealHero } from "@/components/shared/ArcRevealHero";
 import { Navbar } from "@/components/sections/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { InteractiveAppDemo } from "@/components/sections/InteractiveAppDemo";
-import { NetworkStory } from "@/components/sections/NetworkStory";
+import { ProblemSection } from "@/components/sections/ProblemSection";
 import { FirstWeekTimeline } from "@/components/sections/FirstWeekTimeline";
 import { WaitlistSheet } from "@/components/sections/WaitlistSheet";
 import { EndingSection } from "@/components/sections/EndingSection";
@@ -33,24 +33,19 @@ function PageContent() {
   }, []);
 
   return (
-    <ArcRevealHero greetings={INTRO_GREETINGS} storageKey="howzit-intro">
+    <ArcRevealHero greetings={INTRO_GREETINGS} storageKey="howzit-v3">
       <Navbar onJoinClick={openSheet} />
 
       <main>
         <Hero onJoinClick={openSheet} onLearnMoreClick={scrollToDemo} />
         <InteractiveAppDemo ref={demoRef} onJoinClick={openSheet} />
-        <NetworkStory />
+        <ProblemSection />
         <FirstWeekTimeline />
         <EndingSection onJoinClick={openSheet} />
       </main>
 
       <Footer />
-
-      <WaitlistSheet
-        isOpen={sheetOpen}
-        onClose={closeSheet}
-        referredBy={referredBy}
-      />
+      <WaitlistSheet isOpen={sheetOpen} onClose={closeSheet} referredBy={referredBy} />
     </ArcRevealHero>
   );
 }
