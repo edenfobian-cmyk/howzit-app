@@ -25,11 +25,15 @@ function SocialProof({ countKey = 0 }: { countKey?: number }) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/count")
+    // Optimistic: if this is triggered by a new join, bump immediately
+    if (countKey > 0) setCount((c) => (c !== null ? c + 1 : null));
+
+    // Then confirm with the real number from Supabase (no-store bypasses CDN cache)
+    fetch("/api/count", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setCount(d.count))
-      .catch(() => setCount(327));
-  }, [countKey]); // re-fetches whenever a new person joins
+      .catch(() => {});
+  }, [countKey]);
 
   return (
     <div className="flex flex-wrap items-center gap-4">
