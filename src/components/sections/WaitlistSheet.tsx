@@ -231,7 +231,16 @@ function SuccessState({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [referralCount, setReferralCount] = useState<number | null>(null);
   const referralUrl = referralCode ? `${SITE_URL}/?ref=${referralCode}` : null;
+
+  useEffect(() => {
+    if (!referralCode) return;
+    fetch(`/api/referral-count?code=${referralCode}`)
+      .then((r) => r.json())
+      .then((d) => setReferralCount(d.count ?? 0))
+      .catch(() => setReferralCount(0));
+  }, [referralCode]);
 
   const handleCopy = async () => {
     if (!referralUrl) return;
@@ -300,7 +309,7 @@ function SuccessState({
             </button>
           </div>
           <p className="mt-3 text-xs text-[var(--warm-500)]">
-            0 / 3 friends referred
+            {referralCount === null ? "..." : referralCount} / 3 friends referred
           </p>
         </motion.div>
       )}

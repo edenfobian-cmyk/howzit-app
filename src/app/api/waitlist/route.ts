@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         age,
         looking_for,
         referral_code,
-        referred_by: referred_by ?? null,
+        referred_by: referred_by || null,
         source: req.headers.get("referer") ?? "direct",
       })
       .select("referral_code")
