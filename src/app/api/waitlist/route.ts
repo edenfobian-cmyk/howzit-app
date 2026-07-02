@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomBytes } from "crypto";
 import { waitlistSchema } from "@/lib/validations";
+import { sendWelcomeEmail } from "@/lib/email";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -60,6 +61,13 @@ export async function POST(req: NextRequest) {
       console.error("waitlist insert failed:", error);
       throw error;
     }
+
+    // Send welcome email — fire-and-forget so a mail failure never blocks signup
+    sendWelcomeEmail({
+      firstName: first_name,
+      email,
+      referralCode: data.referral_code,
+    }).catch((err) => console.error("Welcome email failed:", err));
 
     return NextResponse.json(
       { success: true, referral_code: data.referral_code },
